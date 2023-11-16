@@ -15,14 +15,19 @@ policeRadioSources['Mesa Police Department Central Patrol District'] = 'https://
 //policeRadioSources['Mesa Police Department Fiesta Patrol District'] = '';
 
 class PoliceScanner {
-  async constructor() {
+  constructor(url) {
     this.data = [];
-    this.res = await fetch(policeRadioSources['Mesa Police Department Central Patrol District']);
+    this.url = url;
+    this.request(url);
+    setInterval(() => this.whispr(), 15000); // translate data to text via whispr every 15 seconds
+  }
+
+  async request(url) {
+    this.res = await fetch(url);
     this.res.body.on('data', buffer => {
       console.log('Data received: '+buffer);
       this.data.push(buffer);
     });
-    setInterval(() => this.whispr(), 15000); // translate data to text via whispr every 15 seconds
   }
 
   async whispr() {
