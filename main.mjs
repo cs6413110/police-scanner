@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
 //import { nodewhisper } from 'nodejs-whisper'
 
-const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: ''});  
+//const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: ''});  
 
 const policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa Police Department Central Patrol District'] = 'https://listen.broadcastify.com/nqhkys674dzfmvx.mp3?nc=66398&xan=xtf9912b41c';
