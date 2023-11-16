@@ -37,6 +37,6 @@ class PoliceScanner {
   
 }
 
-for (const source of policeRadioSources) scanners.push(new PoliceScanner(source));
+for (const source of Object.values(policeRadioSources)) scanners.push(new PoliceScanner(source));
 
 
