@@ -6,7 +6,6 @@
 
 import fs from 'fs';
 import fetch from 'node-fetch';
-import {pipeline} from 'stream';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
 import whisper from 'whisper-node';
 
@@ -29,13 +28,12 @@ class PoliceScanner {
   async request(url) {
     this.res = await fetch(url);
     this.makeFileStream();
-    this.res.body.pipe(this.file);
   }
 
   makeFileStream() {
     this.fileSource = `${this.name}@${Math.random()}.mp3`; // Random file name for ref
     this.file = fs.createWriteStream(this.fileSource); // Create write stream
-    this.res.pipe(this.file); // Link to mp3 stream
+    this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*10*60); // File size is ~10 minute longs
     this.file.on('finish', () => {
       this.filesToProcess.push(this.fileSource);
