@@ -6,7 +6,7 @@
 
 import fetch from 'node-fetch';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
-import { nodewhisper } from 'nodejs-whisper'
+//import { nodewhisper } from 'nodejs-whisper'
 
 const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: ''});  
 
