@@ -22,7 +22,7 @@ class PoliceScanner {
     this.url = url;
     this.name = name;
     this.request(url);
-    setInterval(() => this.whispr(), 60000); // translate data to text via whispr every 60 seconds
+    setInterval(() => this.whispr(), 10000); // translate data to text via whispr every 60 seconds
   }
 
   async request(url) {
@@ -34,7 +34,7 @@ class PoliceScanner {
     this.fileSource = `${this.name}@${Math.random()}.mp3`; // Random file name for ref
     this.file = fs.createWriteStream(this.fileSource); // Create write stream
     this.res.body.pipe(this.file); // Link to mp3 stream
-    setTimeout(() => this.file.end(), 1000*10*60); // File size is ~10 minute longs
+    setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
       this.filesToProcess.push(this.fileSource);
       this.makeFileStream()
