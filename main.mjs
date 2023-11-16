@@ -43,7 +43,7 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
-      const transcript = await whisper(`${filename}`, {modelName: 'tiny.en'});
+      const transcript = await whisper(__dirname+filename, {modelName: 'tiny.en'});
       textToProcess.push(transcript.speech);
     }
   }  
