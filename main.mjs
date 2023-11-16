@@ -49,12 +49,14 @@ class PoliceScanner {
   async whispr() {
     for (const filename of this.filesToProcess) {
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
+      console.log(transcript.speech);
       textToProcess.push(transcript.speech);
     }
   }  
 }
 
 setInterval(async() => { // Loop for processing text via chatgpt into events
+  console.log('gpt');
   for (const text of textToProcess) {
     const res = await chatgpt.sendMessage(prompt+text);
     events = events.concat(JSON.parse(res.text));
