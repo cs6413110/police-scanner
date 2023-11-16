@@ -4,8 +4,8 @@
   Audio to Text conversion by assemblyai(NOT 100% FREE)
 */
 
-const {AssemblyAI} = require('assemblyai');
-const fetch = require('node-fetch');
+import {AssemblyAI} from 'assemblyai';
+import fetch from 'node-fetch';
 const client = new AssemblyAI({apiKey: '19b97f1b12024a1fae253a33724f32c7'});
 const realtime = client.realtime.createService({sampleRate: 16_000});
 const policeRadioSources = {}
