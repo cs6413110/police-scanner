@@ -6,9 +6,18 @@
 
 import fetch from 'node-fetch';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
-//import { nodewhisper } from 'nodejs-whisper'
+import { nodewhisper } from 'nodejs-whisper'
 
-//const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: ''});  
+const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: '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'});  
+
+/*async function example() {
+  const api = new ChatGPTUnofficialProxyAPI({
+    accessToken: process.env.OPENAI_ACCESS_TOKEN
+  })
+
+  const res = await api.sendMessage('Hello World!')
+  console.log(res.text)
+}*/
 
 const policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa Police Department Central Patrol District'] = 'https://listen.broadcastify.com/nqhkys674dzfmvx.mp3?nc=66398&xan=xtf9912b41c';
@@ -24,10 +33,7 @@ class PoliceScanner {
 
   async request(url) {
     this.res = await fetch(url);
-    this.res.body.on('data', buffer => {
-      console.log('Data received: '+buffer);
-      this.data.push(buffer);
-    });
+    this.res.body.on('data', buffer => this.data.push(buffer));
   }
 
   async whispr() {
