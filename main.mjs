@@ -15,7 +15,7 @@ policeRadioSources['Mesa Police Department Central Patrol District'] = 'https://
 //policeRadioSources['Mesa Police Department Fiesta Patrol District'] = '';
 
 class PoliceScanner {
-  constructor() {
+  async constructor() {
     this.data = [];
     this.res = await fetch(policeRadioSources['Mesa Police Department Central Patrol District']);
     this.res.body.on('data', buffer => {
@@ -25,7 +25,7 @@ class PoliceScanner {
     setInterval(() => this.whispr(), 15000); // translate data to text via whispr every 15 seconds
   }
 
-  whispr() {
+  async whispr() {
     
   }
 
