@@ -29,7 +29,7 @@ class PoliceScanner {
   async request(url) {
     this.res = await fetch(url);
     this.makeFileStream();
-    this.res.pipe(this.file);
+    this.res.body.pipe(this.file);
   }
 
   makeFileStream() {
