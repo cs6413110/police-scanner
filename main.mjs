@@ -6,6 +6,7 @@
 
 import fs from 'fs';
 import fetch from 'node-fetch';
+import {dirname, resolve} from 'path';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
 import {nodewhisper as whisper} from 'nodejs-whisper';
 
@@ -43,7 +44,7 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
-      const transcript = await whisper(__dirname+filename, {modelName: 'tiny.en'});
+      const transcript = await whisper(resolve(dirname, filename), {modelName: 'tiny.en'});
       textToProcess.push(transcript.speech);
     }
   }  
