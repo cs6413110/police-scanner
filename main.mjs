@@ -26,17 +26,19 @@ const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filenam
 const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: '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'}); 
 const prompt = 'You are a police radio scanner. Your job is to take the provided radio text and use the information to provided data to a safety application to notify home owners of nearby crime. You will provided a response with data structured like so: [{"address":"<Address of the event, defaults to UNKNOWN>","starttime":"<time of the occurance, defaults to RECENTLY">,"type":"<Type of the event(e.g robbery, break-in, assult, threat...), defaults to UNKNOWN>"}]. Here is the police radio stream in a text format for you to process: ';
 
-let policeRadioSources = {}, scanners = [], textToProcess = [], events = [];
+let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/qvm5g8yst6cbj92.mp3?nc=72701&xan=xtf9912b41c';
 //policeRadioSources['Mesa Police Department Fiesta Patrol District'] = '';
 
 class PoliceScanner {
   constructor(url, name) {
     this.filesToProcess = [];
+    this.transcript = '';
     this.url = url;
     this.name = name;
     this.request(url);
     setInterval(() => this.whispr(), 10000); // translate data to text via whispr every 60 seconds
+    setInterval(() => this.chatgpt(), 60000); // convert format into readable
   }
 
   async request(url) {
@@ -60,20 +62,16 @@ class PoliceScanner {
     for (const filename of this.filesToProcess) {
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en', whisperOptions: {outputInText: true}});
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      textToProcess.push(transcript);
+      this.transcript += transcript;
     }
   }  
-}
 
-setInterval(async() => { // Loop for processing text via chatgpt into events
-  for (const text of textToProcess) {
-    console.log('gpt: '+text);
-    const res = await chatgpt.sendMessage(prompt+text);
-    console.log(res.text);
-    events = events.concat(JSON.parse(res.text));
+  async chatgpt() {
+    console.log('Applying chatgpt to: '+this.transcript);
+    const res = await chatgpt.sendMessage('hi');
+    console.log(JSON.stringify(res));
+    console.log(res.text);    
   }
-  textToProcess = [];
-  console.log(events);
-}, 60*1000);
+}
 
 for (const source of Object.keys(policeRadioSources)) scanners.push(new PoliceScanner(policeRadioSources[source], source)); // Launch the radio listeners
