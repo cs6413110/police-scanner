@@ -58,9 +58,7 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
-      console.log('processing');
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en', whisperOptions: {outputInText: true}});
-      console.log('Speech: '+JSON.stringify(transcript));
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       textToProcess.push(transcript);
     }
@@ -68,9 +66,10 @@ class PoliceScanner {
 }
 
 setInterval(async() => { // Loop for processing text via chatgpt into events
-  console.log('gpt');
   for (const text of textToProcess) {
+    console.log('gpt: '+text);
     const res = await chatgpt.sendMessage(prompt+text);
+    console.log(res.text);
     events = events.concat(JSON.parse(res.text));
   }
   textToProcess = [];
