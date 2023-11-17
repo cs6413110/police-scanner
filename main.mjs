@@ -19,7 +19,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
-import {whisper} from 'whisper-node';
+import {nodewhisper as whisper} from 'nodejs-whisper';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 
