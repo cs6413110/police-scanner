@@ -86,7 +86,7 @@ class PoliceScanner {
   }  
 
   async chatgpt() {
-    gpt({prompt: prompt+this.transcript, model: 'gpt-4', type: 'json'}, (err, data) => {
+    gpt({prompt: prompt+this.transcript.join('\n'), model: 'gpt-4', type: 'json'}, (err, data) => {
       this.premature = JSON.parse(data.gpt);
       if (!Array.isArray(this.premature)) return this.chatgpt(); // recompute
       this.premature = this.premature.filter(e => {
@@ -95,7 +95,7 @@ class PoliceScanner {
         return true;
       });
       console.log('Premature: '+JSON.stringify(this.premature));
-      console.log('Len: '+this.transcript.length);
+      console.log('Transcript: '+JSON.stringify(this.transcript));
       if (this.transcript.length >= 5) {
         events = events.concat(this.premature);
         this.transcript = [];
