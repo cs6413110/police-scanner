@@ -50,7 +50,10 @@ class PoliceScanner {
     this.file = fs.createWriteStream(resolve(__dirname, this.fileSource)); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
-    setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
+    setTimeout(() => {
+      this.file.end()
+      new Mp32Wav(resolve(__dirname, this.fileSource)).exec();
+    }, 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
       this.filesToProcess.push(this.fileSource);
       this.makeFileStream()
@@ -59,8 +62,7 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
-      new Mp32Wav(resolve(__dirname, filename)).exec();
-      const transcript = await whisper(resolve(__dirname, filename).replace('mp3', 'wav'), {modelName: 'tiny.en'});
+      const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
       console.log(transcript);
       console.log(transcript.speech);
       textToProcess.push(transcript.speech);
