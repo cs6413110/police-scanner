@@ -25,6 +25,7 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
+import {ffmpeg} from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
 import {whisper} from 'whisper-node-anas23';
 
@@ -66,15 +67,15 @@ class PoliceScanner {
   }
 
   makeFileStream() {
-    this.fileSource = `${this.name}@${Math.random()}.mp3`; // Random file name for ref
-    this.file = fs.createWriteStream(resolve(__dirname, this.fileSource)); // Create write stream
+    this.fileSource = `${this.name}@${Math.random()}.wav`; // Random file name for ref
+    this.file = fs.createWriteStream(); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
-    this.file.on('finish', () => {
+    ffmpeg(this.file).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
       this.filesToProcess.push(this.fileSource);
       this.makeFileStream();
-    }); // After stream is 100% done, link a new stream
+    }).save(resolve(__dirname, this.fileSource));
   }
 
   async whispr() {
