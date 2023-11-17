@@ -23,7 +23,7 @@ import {gpt} from 'gpti';
 import {nodewhisper as whisper} from 'nodejs-whisper';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
-const prompt = 'You are a police radio scanner. Your job is to take the provided radio text and use the information to provided data to a safety application to notify home owners of nearby crime. You will provided a response with data structured like so: [{"address":"<Address of the event, defaults to UNKNOWN>","starttime":"<time of the occurance, defaults to RECENTLY">,"type":"<Type of the event(e.g robbery, break-in, assult, threat...), defaults to UNKNOWN>"}]. Here is the police radio stream in a text format for you to process: ';
+const prompt = `You are a police radio scanner. Your job is to take the provided radio text and use it to determine what criminal/police events are happening. Your response must be valid json that can be parsed with JSON.parse(). Your JSON should be an array of objects, each object representing an event. Each event should have information in the following categories: address(address of the event and type(what is the event). The address category should contain the address that the event is at. It should be in USPS standard address format. If the address is not known, put UNKNOWN as the default. The type category represents the type of the event. It should be labeled as one of the criminal offenses as recognized by the FBI or UNKNOWN if the context is unclear. Here is an example output: [{"address":"4928 E Warding Cir","type":"Intimidation"}]. If there is no clear event just send an empty array. In a case with multiple events send all of the events(add more objects to the array). The translator for police radio to text may be buggy so misinterpretation of words is possible. If a word does not fit within the context, use the most likely option instead. Here is the data for you to process: `;
 
 let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/qvm5g8yst6cbj92.mp3?nc=72701&xan=xtf9912b41c';
@@ -71,7 +71,7 @@ class PoliceScanner {
       console.log('Premature: '+JSON.stringify(this.premature));
       if (this.transcript.length >= 5) {
         events = events.concat(this.premature);
-        this.transcript = [];
+        this.transcript.shift();
       }
     });
   }
