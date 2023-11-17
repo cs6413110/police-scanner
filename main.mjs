@@ -80,7 +80,7 @@ class PoliceScanner {
   async whispr() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      const transcript = whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
+      const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
       console.log(typeof transcript);
       console.log(JSON.stringify(transcript));
       this.transcript.push(transcript);
