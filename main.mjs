@@ -15,7 +15,7 @@
 
 import fs from 'fs';
 import fetch from 'node-fetch';
-import Mp32Wav from 'mp3-to-wav';
+import ffmpeg from 'fluent-ffmpeg';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
@@ -50,11 +50,13 @@ class PoliceScanner {
     this.file = fs.createWriteStream(resolve(__dirname, this.fileSource)); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
-    setTimeout(() => {
-      this.file.end();
-    }, 1000*30); // File size will be ~10 minute longs
+    setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
-      new Mp32Wav(resolve(__dirname, this.fileSource)).exec();
+      ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').on('error', err => console.log('An error occurred: ' + err.message)).on('progress', (progress) => {
+        console.log('Processing: ' + progress.targetSize + ' KB converted');
+      }).on('end', () => {
+        console.log('Processing finished !');
+      }).save(resolve(__dirname, this.fileSource).replace('.mp3', '.wav'));
       this.filesToProcess.push(this.fileSource);
       this.makeFileStream()
     }); // After stream is 100% done, link a new stream
@@ -62,7 +64,7 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
-      const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
+      const transcript = await whisper(resolve(__dirname, filename).replace('.mp3', '.wav'), {modelName: 'tiny.en'});
       console.log(transcript);
       console.log(transcript.speech);
       textToProcess.push(transcript.speech);
