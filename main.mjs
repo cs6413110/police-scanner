@@ -27,7 +27,7 @@ import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
-import {whisper} from 'whisper-node-anas23';
+import {nodewhisper as whisper} from 'nodejs-whisper';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
@@ -69,26 +69,23 @@ class PoliceScanner {
   }
 
   makeFileStream() {
-    this.fileSource = `${this.name}@${Math.random()}.wav`; // Random file name for ref
-    this.file = fs.createWriteStream(resolve(__dirname, this.fileSource).replace('wav', 'mp3')); // Create write stream
+    this.fileSource = `${this.name}@${Math.random()}.mp3`; // Random file name for ref
+    this.file = fs.createWriteStream(resolve(__dirname, this.fileSource)); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
-      ffmpeg(resolve(__dirname, this.fileSource).replace('wav', 'mp3')).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
-        this.filesToProcess.push(this.fileSource);
-        this.makeFileStream();
-      }).save(resolve(__dirname, this.fileSource));
-    });
+      this.filesToProcess.push(this.fileSource);
+      this.makeFileStream();
+    }); // After stream is 100% done, link a new stream
   }
 
   async whispr() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
-      console.log(JSON.stringify(transcript));
-      this.transcript.push(transcript.speech);
-      fs.unlinkSync(resolve(__dirname, filename));
+      console.log(transcript);
+      fs.unlink(resolve(__dirname, filename), () => fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'), () => this.transcript.push(transcript)));
     }
   }  
 
