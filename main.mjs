@@ -51,10 +51,10 @@ class PoliceScanner {
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => {
-      this.file.end()
-      new Mp32Wav(resolve(__dirname, this.fileSource)).exec();
+      this.file.end();
     }, 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
+      new Mp32Wav(resolve(__dirname, this.fileSource)).exec();
       this.filesToProcess.push(this.fileSource);
       this.makeFileStream()
     }); // After stream is 100% done, link a new stream
