@@ -9,7 +9,7 @@ import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
-import {nodewhisper as whisper} from 'nodejs-whisper';
+import {whisper} from 'whisper-node';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
