@@ -52,7 +52,7 @@ class PoliceScanner {
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
-      ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar', '16000').on('error', err => console.log('An error occurred: ' + err.message)).on('progress', (progress) => {
+      ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').audioBitrate('16k').on('error', err => console.log('An error occurred: ' + err.message)).on('progress', (progress) => {
         console.log('Processing: ' + progress.targetSize + ' KB converted');
       }).on('end', () => {
         console.log('Processing finished !');
