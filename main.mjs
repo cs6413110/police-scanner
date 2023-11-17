@@ -60,7 +60,7 @@ class PoliceScanner {
   async whispr() {
     for (const filename of this.filesToProcess) {
       new Mp32Wav(resolve(__dirname, filename)).exec();
-      const transcript = await whisper(resolve(__dirname, filename).replace('mp3', 'wav');, {modelName: 'tiny.en'});
+      const transcript = await whisper(resolve(__dirname, filename).replace('mp3', 'wav'), {modelName: 'tiny.en'});
       console.log(transcript);
       console.log(transcript.speech);
       textToProcess.push(transcript.speech);
