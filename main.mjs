@@ -27,7 +27,9 @@ const prompt = `You are a police radio scanner. Your job is to take the provided
 
 let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/qvm5g8yst6cbj92.mp3?nc=72701&xan=xtf9912b41c';
-//policeRadioSources['Mesa Police Department Fiesta Patrol District'] = '';
+policeRadioSources['Mesa Police Department Fiesta Patrol District'] = 'https://listen.broadcastify.com/x2k9g1dfq7ct85n.mp3?nc=12277&xan=xtf9912b41c';
+policeRadioSources['Mesa Police Department Red Mountain Patrol District'] = 'https://listen.broadcastify.com/429ms5hp86ywbdz.mp3?nc=68310&xan=xtf9912b41c';
+policeRadioSources['Mesa Police Department Superstition Patrol District'] = 'https://listen.broadcastify.com/fc9m862sj345byx.mp3?nc=67966&xan=xtf9912b41c';
 
 class PoliceScanner {
   constructor(url, name) {
