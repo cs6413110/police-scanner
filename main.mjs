@@ -25,7 +25,7 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
-import {ffmpeg} from 'fluent-ffmpeg';
+import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
 import {whisper} from 'whisper-node-anas23';
 
