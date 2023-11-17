@@ -3,6 +3,9 @@
   Whisper audio to text conversion
   Chatgpt data to json interpretation
 
+  Advantages: 100% free
+  Disadvantages: May implode server cpu because it uses whisper(audio to text ai) locally.
+
 
   Setup:
   clone this repo
