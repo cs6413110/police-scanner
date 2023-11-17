@@ -27,7 +27,7 @@ import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
-import {nodewhisper as whisper} from 'nodejs-whisper';
+import {whisper} from 'whisper-node';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
@@ -86,6 +86,7 @@ class PoliceScanner {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       const transcript = await whisper(resolve(__dirname, filename).replace('mp3', 'wav'), {modelName: 'tiny.en'});
+      console.log('asdf');
       console.log('transcript: '+JSON.stringify(transcript));
       this.transcript.push(transcript.speech);
       fs.unlinkSync(resolve(__dirname, filename));
