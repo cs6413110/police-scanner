@@ -86,7 +86,12 @@ class PoliceScanner {
     gpt({prompt: prompt+this.transcript, model: 'gpt-4', type: 'json'}, (err, data) => {
       this.premature = JSON.parse(data.gpt);
       console.log('Premature: '+JSON.stringify(this.premature));
-      for (const event of this.premature) if (Object.keys(event).length !== 2 || event.type === undefined || event.address === undefined || (event.type === 'UNKNOWN' && event.address === 'UNKNOWN')) return this.chatgpt();
+      if (!Array.isArray(this.premature)) return this.chatgpt(); // recompute
+      for (const event of this.premature) {
+        if (Object.keys(event).length !== 2 || event.type === undefined || event.address === undefined) return this.chatgpt();
+        if (event.type === 'UNKNOWN' && event.address === 'UNKNOWN') event.delete = true;
+      }
+      this.premature = this.premature.filter(e => !e.delete);
       if (this.transcript.length >= 5) {
         events = events.concat(this.premature);
         this.transcript = this.transcript.slice(Math.max(this.transcript.length-5, 0))
