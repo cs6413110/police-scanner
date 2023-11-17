@@ -61,7 +61,8 @@ class PoliceScanner {
       console.log('processing');
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en', whisperOptions: {outputInText: true}});
       console.log('Speech: '+JSON.stringify(transcript));
-      textToProcess.push(transcript[0].speech);
+      this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
+      textToProcess.push(transcript);
     }
   }  
 }
