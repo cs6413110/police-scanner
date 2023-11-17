@@ -32,7 +32,7 @@ policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://
 class PoliceScanner {
   constructor(url, name) {
     this.filesToProcess = [];
-    this.transcript = '';
+    this.transcript = [];
     this.url = url;
     this.name = name;
     this.request(url);
@@ -62,21 +62,23 @@ class PoliceScanner {
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
       fs.unlink(resolve(__dirname, filename), () => fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'), () => {
         this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-        this.transcript += transcript;
+        this.transcript.push(transcript);
       }));
     }
   }  
 
   async chatgpt() {
     gpt({prompt: prompt+this.transcript, model: 'gpt-4', type: 'json'}, (err, data) => {
-      if (err !== null) {
-        console.log(err);
-      } else {
-        events = events.concat(JSON.parse(data.gpt));
+      this.premature = JSON.parse(data.gpt);
+      console.log('Premature: '+this.premature);
+      if (this.transcript.length >= 5) {
+        events = events.concat(this.premature);
+        this.transcript = [];
       }
-      console.log(events);
     });
   }
 }
+
+setInterval(() => console.log('Probable: '+events), 30000); // event log every 30 seconds 
 
 for (const source of Object.keys(policeRadioSources)) scanners.push(new PoliceScanner(policeRadioSources[source], source)); // Launch the radio listeners
