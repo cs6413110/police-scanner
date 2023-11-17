@@ -59,18 +59,16 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
+      this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
-      fs.unlink(resolve(__dirname, filename), () => fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'), () => {
-        this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-        this.transcript.push(transcript);
-      }));
+      fs.unlink(resolve(__dirname, filename), () => fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'), () => this.transcript.push(transcript)));
     }
   }  
 
   async chatgpt() {
     gpt({prompt: prompt+this.transcript, model: 'gpt-4', type: 'json'}, (err, data) => {
       this.premature = JSON.parse(data.gpt);
-      console.log('Premature: '+this.premature);
+      console.log('Premature: '+JSON.stringify(this.premature));
       if (this.transcript.length >= 5) {
         events = events.concat(this.premature);
         this.transcript = [];
@@ -79,6 +77,6 @@ class PoliceScanner {
   }
 }
 
-setInterval(() => console.log('Probable: '+events), 30000); // event log every 30 seconds 
+setInterval(() => console.log('Probable: '+JSON.stringify(events)), 30000); // event log every 30 seconds 
 
 for (const source of Object.keys(policeRadioSources)) scanners.push(new PoliceScanner(policeRadioSources[source], source)); // Launch the radio listeners
