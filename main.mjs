@@ -23,8 +23,20 @@ import {gpt} from 'gpti';
 import {nodewhisper as whisper} from 'nodejs-whisper';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
-const prompt = `You are a police radio scanner. Your job is to take the provided radio text and use it to determine what criminal/police events are happening. Your response must be valid json that can be parsed with JSON.parse(). Your JSON should be an array of objects, each object representing an event. Each event should have information in the following categories: address(address of the event and type(what is the event). The address category should contain the address that the event is at. It should be in USPS standard address format. If the address is not known, put UNKNOWN as the default. The type category represents the type of the event. It should be labeled as one of the criminal offenses as recognized by the FBI or UNKNOWN if the context is unclear. Here is an example output: [{"address":"4928 E Warding Cir","type":"Intimidation"}]. If there is no clear event or if both address and type are unknown just send an empty array. In a case with multiple events send all of the events(add more objects to the array). The translator for police radio to text may be buggy so misinterpretation of words is possible. If a word does not fit within the context, use the most likely option instead. Here is the data for you to process: `;
+const prompt = `
+Please use the provided radio text to generate a JSON response containing police event data. The response should be a valid JSON array consisting of objects, where each object represents an event. Each event should have the following properties:
 
+1. "address": This property should contain the address of the event in USPS standard address format. If the address is unknown, please use the value "UNKNOWN".
+
+2. "type": This property represents the type of the event and should be labeled as one of the recognized criminal offenses by the FBI. If the type is unclear, please use the value "UNKNOWN".
+
+Here is an example output to follow:
+[{"address":"4928 E Warding Cir","type":"Intimidation"}]
+
+If there is no clear event or if both address and type are unknown, simply return an empty array. Please keep in mind that the translator for police radio to text may introduce errors and misinterpretations, so use the most likely options if a word doesn't fit the context. 
+
+Please process the following data and generate the appropriate JSON response:
+`;
 let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/qvm5g8yst6cbj92.mp3?nc=72701&xan=xtf9912b41c';
 policeRadioSources['Mesa_Police_Department_Fiesta_Patrol_District'] = 'https://listen.broadcastify.com/x2k9g1dfq7ct85n.mp3?nc=12277&xan=xtf9912b41c';
