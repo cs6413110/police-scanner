@@ -27,7 +27,7 @@ import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
-import {nodewhisper as whisper} from 'nodejs-whisper';
+import {whisper} from 'whisper-node';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
