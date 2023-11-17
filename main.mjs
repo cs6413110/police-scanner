@@ -70,14 +70,16 @@ class PoliceScanner {
 
   makeFileStream() {
     this.fileSource = `${this.name}@${Math.random()}.wav`; // Random file name for ref
-    this.file = fs.createWriteStream([]); // Create write stream
+    this.file = fs.createWriteStream(resolve(__dirname, this.fileSource).replace('wav', 'mp3')); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
-    ffmpeg(this.file).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
-      this.filesToProcess.push(this.fileSource);
-      this.makeFileStream();
-    }).save(resolve(__dirname, this.fileSource));
+    this.file.on('finish', () => {
+      ffmpeg(this.file).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
+        this.filesToProcess.push(this.fileSource);
+        this.makeFileStream();
+      }).save(resolve(__dirname, this.fileSource));
+    });
   }
 
   async whispr() {
