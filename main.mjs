@@ -46,9 +46,9 @@ Please process the following data and generate the appropriate JSON response:
 `;
 let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/qvm5g8yst6cbj92.mp3?nc=72701&xan=xtf9912b41c';
-//policeRadioSources['Mesa_Police_Department_Fiesta_Patrol_District'] = 'https://listen.broadcastify.com/x2k9g1dfq7ct85n.mp3?nc=12277&xan=xtf9912b41c';
-//policeRadioSources['Mesa_Police_Department_Red_Mountain_Patrol_District'] = 'https://listen.broadcastify.com/429ms5hp86ywbdz.mp3?nc=68310&xan=xtf9912b41c';
-//policeRadioSources['Mesa_Police_Department_Superstition_Patrol_District'] = 'https://listen.broadcastify.com/fc9m862sj345byx.mp3?nc=67966&xan=xtf9912b41c';
+policeRadioSources['Mesa_Police_Department_Fiesta_Patrol_District'] = 'https://listen.broadcastify.com/x2k9g1dfq7ct85n.mp3?nc=12277&xan=xtf9912b41c';
+policeRadioSources['Mesa_Police_Department_Red_Mountain_Patrol_District'] = 'https://listen.broadcastify.com/429ms5hp86ywbdz.mp3?nc=68310&xan=xtf9912b41c';
+policeRadioSources['Mesa_Police_Department_Superstition_Patrol_District'] = 'https://listen.broadcastify.com/fc9m862sj345byx.mp3?nc=67966&xan=xtf9912b41c';
 
 class PoliceScanner {
   constructor(url, name) {
@@ -56,7 +56,6 @@ class PoliceScanner {
     this.transcript = [];
     this.url = url;
     this.name = name;
-    this.busy = false;
     this.request(url);
     setInterval(() => {
       this.whispr();
@@ -84,14 +83,11 @@ class PoliceScanner {
   }
 
   async whispr() {
-    if (this.busy) return;
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      this.busy = true;
-      const transcript = await whisper(resolve(__dirname, filename).replace('mp3', 'wav'), {modelName: 'tiny.en'});
-      this.busy = false;
-      console.log('transcript: '+JSON.stringify(transcript));
-      this.transcript.push(transcript.speech);
+      const transcript = await requestTranscribing(resolve(__dirname, filename).replace('mp3', 'wav'));
+      console.log(transcript);
+      this.transcript.push(transcript);
       fs.unlinkSync(resolve(__dirname, filename));
       fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
     }
@@ -115,6 +111,15 @@ class PoliceScanner {
       }
     });
   }
+}
+
+let busy = false;
+const requestTranscribing = (filePath) => {
+  if (busy) return;
+  busy = true;
+  const transcript = await whisper(filepath, {model: 'tiny.en'});
+  busy = false;
+  return transcript;
 }
 
 setInterval(() => console.log('Probable: '+JSON.stringify(events)), 30000); // event log every 30 seconds 
