@@ -56,6 +56,7 @@ class PoliceScanner {
     this.transcript = [];
     this.url = url;
     this.name = name;
+    this.busy = false;
     this.request(url);
     setInterval(() => {
       this.whispr();
@@ -83,10 +84,12 @@ class PoliceScanner {
   }
 
   async whispr() {
+    if (this.busy) return;
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
+      this.busy = true;
       const transcript = await whisper(resolve(__dirname, filename).replace('mp3', 'wav'), {modelName: 'tiny.en'});
-      console.log('asdf');
+      this.busy = false;
       console.log('transcript: '+JSON.stringify(transcript));
       this.transcript.push(transcript.speech);
       fs.unlinkSync(resolve(__dirname, filename));
