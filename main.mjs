@@ -13,7 +13,6 @@
 
   Possible Optimizations:
     - Find a way to not create/delete audio files?
-    - 
 */
 
 import fs from 'fs';
@@ -61,10 +60,10 @@ class PoliceScanner {
   async whispr() {
     for (const filename of this.filesToProcess) {
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
-      fs.unlink(resolve(__dirname, filename));
-      fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'));
-      this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      this.transcript += transcript;
+      fs.unlink(resolve(__dirname, filename), () => fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'), () => {
+        this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
+        this.transcript += transcript;
+      });
     }
   }  
 
