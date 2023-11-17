@@ -23,7 +23,7 @@ import {nodewhisper as whisper} from 'nodejs-whisper';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 
-const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: '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'}); 
+const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: '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'}); 
 const prompt = 'You are a police radio scanner. Your job is to take the provided radio text and use the information to provided data to a safety application to notify home owners of nearby crime. You will provided a response with data structured like so: [{"address":"<Address of the event, defaults to UNKNOWN>","starttime":"<time of the occurance, defaults to RECENTLY">,"type":"<Type of the event(e.g robbery, break-in, assult, threat...), defaults to UNKNOWN>"}]. Here is the police radio stream in a text format for you to process: ';
 
 let policeRadioSources = {}, scanners = [], events = [];
