@@ -89,7 +89,7 @@ class PoliceScanner {
       console.log('transcript: '+JSON.stringify(transcript));
       this.transcript.push(transcript.speech);
       fs.unlinkSync(resolve(__dirname, filename));
-      fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav');
+      fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
     }
   }  
 
