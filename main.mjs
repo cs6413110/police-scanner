@@ -63,7 +63,7 @@ class PoliceScanner {
       fs.unlink(resolve(__dirname, filename), () => fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'), () => {
         this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
         this.transcript += transcript;
-      });
+      }));
     }
   }  
 
