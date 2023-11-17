@@ -82,7 +82,9 @@ class PoliceScanner {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
       console.log(transcript.speech);
-      fs.unlink(resolve(__dirname, filename), () => fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'), () => this.transcript.push(transcript.speech)));
+      this.transcript.push(transcript.speech);
+      fs.unlinkSync(resolve(__dirname, filename));
+      fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
     }
   }  
 
