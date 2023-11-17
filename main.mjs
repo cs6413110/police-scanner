@@ -26,7 +26,7 @@ import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import {gpt} from 'gpti';
-import {nodewhisper as whisper} from 'nodejs-whisper';
+import {whisper} from 'whisper-node-anas23';
 
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
@@ -81,7 +81,6 @@ class PoliceScanner {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
-      console.log(typeof transcript);
       console.log(JSON.stringify(transcript));
       this.transcript.push(transcript);
       fs.unlinkSync(resolve(__dirname, filename));
@@ -101,9 +100,9 @@ class PoliceScanner {
       });
       console.log('Premature: '+JSON.stringify(this.premature));
       console.log('Transcript: '+JSON.stringify(this.transcript));
-      if (this.transcript.length >= 5) {
+      if (this.transcript.length >= 6) {
         events = events.concat(this.premature);
-        this.transcript = [];
+        this.transcript = this.transcript.slice(-3);
       }
     });
   }
