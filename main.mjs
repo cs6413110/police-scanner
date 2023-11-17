@@ -25,6 +25,11 @@ const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filenam
 
 const chatgpt = new ChatGPTUnofficialProxyAPI({accessToken: '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'}); 
 const prompt = 'You are a police radio scanner. Your job is to take the provided radio text and use the information to provided data to a safety application to notify home owners of nearby crime. You will provided a response with data structured like so: [{"address":"<Address of the event, defaults to UNKNOWN>","starttime":"<time of the occurance, defaults to RECENTLY">,"type":"<Type of the event(e.g robbery, break-in, assult, threat...), defaults to UNKNOWN>"}]. Here is the police radio stream in a text format for you to process: ';
+(async() => {
+  const res = await chatgpt.sendMessage('hi');
+  console.log(JSON.stringify(res));
+})();
+
 
 let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/qvm5g8yst6cbj92.mp3?nc=72701&xan=xtf9912b41c';
