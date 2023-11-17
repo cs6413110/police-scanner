@@ -15,6 +15,7 @@
 
 import fs from 'fs';
 import fetch from 'node-fetch';
+import Mp32Wav from 'mp3-to-wav';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
@@ -58,6 +59,7 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
+      new Mp32Wav(resolve(__dirname, filename)).exec();
       const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
       console.log(transcript);
       console.log(transcript.speech);
