@@ -6,16 +6,18 @@
 
   Setup:
   clone this repo
-  npm install node-fetch chatgpt whisper-node
-  nano node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh
-  set the src value to "https://huggingface.co/ggerganov/whisper.cpp"
-  run the file you just edited with paramater tiny.en: ./node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh tiny.en
-  run with node main.mjs
+  Command: npm install node-fetch gpti nodejs-whisper
+  Command: npx nodejs-whisper download 
+  Install tiny.en model
+  Run this file
+
+  Possible Optimizations:
+    - Find a way to not create/delete audio files?
+    - 
 */
 
 import fs from 'fs';
 import fetch from 'node-fetch';
-import ffmpeg from 'fluent-ffmpeg';
 import {fileURLToPath} from 'url';
 import {dirname, resolve} from 'path';
 import {gpt} from 'gpti';
@@ -58,19 +60,16 @@ class PoliceScanner {
 
   async whispr() {
     for (const filename of this.filesToProcess) {
-      const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en', whisperOptions: {outputInText: true}});
+      const transcript = await whisper(resolve(__dirname, filename), {modelName: 'tiny.en'});
+      fs.unlink(resolve(__dirname, filename));
+      fs.unlink(resolve(__dirname, filename).replace('mp3', 'wav'));
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       this.transcript += transcript;
     }
   }  
 
   async chatgpt() {
-    console.log('Applying chatgpt to: '+this.transcript);
-    gpt({
-      prompt: prompt+this.transcript,
-      model: 'gpt-4',
-      type: 'json'
-    }, (err, data) => {
+    gpt({prompt: prompt+this.transcript, model: 'gpt-4', type: 'json'}, (err, data) => {
       if (err !== null) {
         console.log(err);
       } else {
