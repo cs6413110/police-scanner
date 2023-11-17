@@ -75,7 +75,7 @@ class PoliceScanner {
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
-      ffmpeg(this.file).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
+      ffmpeg(resolve(__dirname, this.fileSource).replace('wav', 'mp3')).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
         this.filesToProcess.push(this.fileSource);
         this.makeFileStream();
       }).save(resolve(__dirname, this.fileSource));
