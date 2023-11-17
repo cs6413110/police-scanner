@@ -85,6 +85,7 @@ class PoliceScanner {
   async chatgpt() {
     gpt({prompt: prompt+this.transcript, model: 'gpt-4', type: 'json'}, (err, data) => {
       this.premature = JSON.parse(data.gpt);
+      for (const event of this.premature) if (Object.keys(event).length !== 2 || event.type === undefined || event.address === undefined || (event.type === 'UNKNOWN' && event.address === 'UNKNOWN') return this.chatgpt();
       console.log('Premature: '+JSON.stringify(this.premature));
       if (this.transcript.length >= 5) {
         events = events.concat(this.premature);
