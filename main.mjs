@@ -68,8 +68,7 @@ class PoliceScanner {
 
   async chatgpt() {
     console.log('Applying chatgpt to: '+this.transcript);
-    const res = await chatgpt.sendMessage('hi');
-    console.log(JSON.stringify(res));
+    const res = await chatgpt.sendMessage(prompt+this.transcript);
     console.log(res.text);    
   }
 }
