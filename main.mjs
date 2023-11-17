@@ -75,17 +75,17 @@ class PoliceScanner {
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
     this.file.on('finish', () => {
-      //ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
+      ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
         this.filesToProcess.push(this.fileSource);
         this.makeFileStream();
-      //}).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
+      }).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
     }); // After stream is 100% done, link a new stream
   }
 
   async whispr() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      const transcript = await whisper(resolve(__dirname, filename)/*.replace('mp3', 'wav')*/, {modelName: 'tiny.en'});
+      const transcript = await whisper(resolve(__dirname, filename).replace('mp3', 'wav'), {modelName: 'tiny.en'});
       console.log('asdf');
       console.log('transcript: '+JSON.stringify(transcript));
       this.transcript.push(transcript.speech);
