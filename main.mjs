@@ -117,7 +117,7 @@ let busy = false;
 const requestTranscribing = async(filepath) => {
   if (busy) return;
   busy = true;
-  const transcript = await whisper(filepath, {model: 'tiny.en'});
+  const transcript = await whisper(filepath, {modelName: 'tiny.en'});
   busy = false;
   return transcript;
 }
