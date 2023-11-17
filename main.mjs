@@ -2,6 +2,15 @@
   Radio Sources are from https://www.broadcastify.com/listen/official
   Whisper audio to text conversion
   Chatgpt data to json interpretation
+
+
+  Setup:
+  clone this repo
+  npm install node-fetch chatgpt whisper-node
+  nano node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh
+  set the src value to "https://huggingface.co/ggerganov/whisper.cpp"
+  run the file you just edited with paramater tiny.en: ./node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh tiny.en
+  run with node main.mjs
 */
 
 import fs from 'fs';
@@ -37,7 +46,7 @@ class PoliceScanner {
 
   makeFileStream() {
     this.fileSource = `${this.name}@${Math.random()}.mp3`; // Random file name for ref
-    this.file = fs.createWriteStream(this.fileSource); // Create write stream
+    this.file = fs.createWriteStream(resolve(__direname, this.fileSource)); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
