@@ -114,7 +114,7 @@ class PoliceScanner {
 }
 
 let busy = false;
-const requestTranscribing = async(filePath) => {
+const requestTranscribing = async(filepath) => {
   if (busy) return;
   busy = true;
   const transcript = await whisper(filepath, {model: 'tiny.en'});
