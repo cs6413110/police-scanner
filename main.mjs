@@ -71,7 +71,7 @@ class PoliceScanner {
       console.log('Premature: '+JSON.stringify(this.premature));
       if (this.transcript.length >= 5) {
         events = events.concat(this.premature);
-        this.transcript.shift();
+        this.transcript = this.transcript.slice(Math.max(this.transcript.length-5, 0))
       }
     });
   }
