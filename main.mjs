@@ -53,7 +53,7 @@ class PoliceScanner {
     this.url = url;
     this.name = name;
     this.request(url);
-    setInterval(() => this.whispr(), 10000); // translate data to text via whispr every 60 seconds
+    setInterval(() => this.whispr(), 60000); // translate data to text via whispr every 60 seconds
     setInterval(() => this.chatgpt(), 60000); // convert format into readable
   }
 
