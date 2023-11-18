@@ -126,6 +126,7 @@ const handleTranscribing = async() => {
   busy = false;
   queue[0][1](transcript);
   queue.splice(0, 1);
+  if (queue.length !== 0) handleTranscribing();
 }
 
 setInterval(() => console.log('Probable: '+JSON.stringify(events)), 30000); // event log every 30 seconds 
