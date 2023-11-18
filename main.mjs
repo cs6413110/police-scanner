@@ -28,7 +28,7 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
-import {Deepgram} from '@deepgram/sdk';
+import {Deepgram} from '@deepgram/sdk/dist';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
@@ -89,7 +89,7 @@ class PoliceScanner {
   async transcribe() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      Deepgram.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav'))}).then(data => {
+      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav'))}).then(data => {
         console.log('data => '+JSON.stringify(data));
         this.transcript.push(data.data);
         fs.unlinkSync(resolve(__dirname, filename));
