@@ -57,10 +57,6 @@ class PoliceScanner {
     this.url = url;
     this.name = name;
     this.request(url);
-    setInterval(() => {
-      this.whispr();
-      this.chatgpt();
-    }, 60000); // translate with ai every 60 seconds
   }
 
   async request(url) {
@@ -73,11 +69,13 @@ class PoliceScanner {
     this.file = fs.createWriteStream(resolve(__dirname, this.fileSource)); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
-    setTimeout(() => this.file.end(), 1000*30); // File size will be ~10 minute longs
+    setTimeout(() => this.file.end(), 60000); // File size will be ~10 minute longs
     this.file.on('finish', () => {
       ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
         this.filesToProcess.push(this.fileSource);
         this.makeFileStream();
+        this.whispr();
+        this.chatgpt();
       }).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
     }); // After stream is 100% done, link a new stream
   }
@@ -130,5 +128,4 @@ const handleTranscribing = async() => {
 }
 
 setInterval(() => console.log('Probable: '+JSON.stringify(events)), 30000); // event log every 30 seconds 
-
 for (const source of Object.keys(policeRadioSources)) scanners.push(new PoliceScanner(policeRadioSources[source], source)); // Launch the radio listeners
