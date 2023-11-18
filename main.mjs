@@ -108,7 +108,7 @@ class PoliceScanner {
         if (e.type.toLowerCase() === 'unknown' && e.address.toLowerCase() === 'unknown') return false;
         return true;
       });
-      console.log('Transcript: '+this.transcript.join('\n');
+      console.log('Transcript: '+this.transcript.join('\n'));
       console.log('Premature: '+JSON.stringify(this.premature));
       if (this.transcript.length >= 30) {
         events = events.concat(this.premature);
