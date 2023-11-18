@@ -94,7 +94,7 @@ class PoliceScanner {
         this.transcript.push(data.data);
         fs.unlinkSync(resolve(__dirname, filename));
         fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
-      }
+      });
     }
   }  
 
