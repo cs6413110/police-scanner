@@ -1,10 +1,14 @@
 /*
+  Resouces:
+  
   Radio Sources are from https://www.broadcastify.com/listen/official
-  Whisper audio to text conversion
-  Chatgpt data to json interpretation
+  Chatgpt usage is free with gpti
 
-  Advantages: 100% free
-  Disadvantages: May implode server cpu because it uses whisper(audio to text ai) locally.
+  Process:
+
+  Download mp3 files from radio sources
+  Send files to deepgram(ai company that converts text to speech)
+  
 
 
   Setup:
@@ -24,11 +28,13 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
+import {Deepgram} from '@deepgram/sdk';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
 import {nodewhisper as whisper} from 'nodejs-whisper';
 
+const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3');
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
 Please use the provided radio text to generate a JSON response containing police event data. The response should be a valid JSON array consisting of objects, where each object represents an event. Each event should have the following properties:
