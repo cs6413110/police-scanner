@@ -80,21 +80,21 @@ class PoliceScanner {
       ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
         this.filesToProcess.push(this.fileSource);
         this.makeFileStream();
-        this.whispr();
+        this.transcribe();
         this.chatgpt();
       }).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
     }); // After stream is 100% done, link a new stream
   }
 
-  async whispr() {
+  async transcribe() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      requestTranscribing(resolve(__dirname, filename).replace('mp3', 'wav'), (transcript) => {
-        console.log(transcript);
-        this.transcript.push(transcript);
+      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav'))}).then(data => {
+        console.log('data => '+JSON.stringify(data));
+        this.transcript.push(data.data);
         fs.unlinkSync(resolve(__dirname, filename));
         fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
-      });
+      }
     }
   }  
 
@@ -108,29 +108,14 @@ class PoliceScanner {
         if (e.type.toLowerCase() === 'unknown' && e.address.toLowerCase() === 'unknown') return false;
         return true;
       });
+      console.log('Transcript: '+this.transcript.join('\n');
       console.log('Premature: '+JSON.stringify(this.premature));
-      console.log('Transcript: '+JSON.stringify(this.transcript));
       if (this.transcript.length >= 30) {
         events = events.concat(this.premature);
         this.transcript = this.transcript.slice(-15);
       }
     });
   }
-}
-
-const queue = [];
-let busy = false;
-const requestTranscribing = (filepath, callback) => {
-  queue.push([filepath, callback]);
-  if (!busy) handleTranscribing();
-}
-const handleTranscribing = async() => {
-  busy = true;
-  const transcript = await whisper(queue[0][0], {modelName: 'tiny.en'});
-  busy = false;
-  queue[0][1](transcript);
-  queue.splice(0, 1);
-  if (queue.length !== 0) handleTranscribing();
 }
 
 setInterval(() => console.log('Probable: '+JSON.stringify(events)), 30000); // event log every 30 seconds 
