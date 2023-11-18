@@ -85,11 +85,12 @@ class PoliceScanner {
   async whispr() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      const transcript = await requestTranscribing(resolve(__dirname, filename).replace('mp3', 'wav'));
-      console.log(transcript);
-      this.transcript.push(transcript);
-      fs.unlinkSync(resolve(__dirname, filename));
-      fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
+      requestTranscribing(resolve(__dirname, filename).replace('mp3', 'wav'), (transcript) => {
+        console.log(transcript);
+        this.transcript.push(transcript);
+        fs.unlinkSync(resolve(__dirname, filename));
+        fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
+      });
     }
   }  
 
@@ -113,13 +114,18 @@ class PoliceScanner {
   }
 }
 
+const queue = [];
 let busy = false;
-const requestTranscribing = async(filepath) => {
-  if (busy) return;
+const requestTranscribing = (filepath, callback) => {
+  queue.push([filepath, callback]);
+  if (!busy) handleTranscribing();
+}
+const handleTranscribing = async() => {
   busy = true;
-  const transcript = await whisper(filepath, {modelName: 'tiny.en'});
+  const transcipt = await whisper(queue[0][0], {modelName: 'tiny.en'});
   busy = false;
-  return transcript;
+  queue[0][1](transcript);
+  queue.splice(0, 1);
 }
 
 setInterval(() => console.log('Probable: '+JSON.stringify(events)), 30000); // event log every 30 seconds 
