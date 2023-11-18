@@ -28,14 +28,13 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
-import api from 'api';
-const Deepgram = api('@api-beta-deepgram/v1.0#1nvhf2qloimih4v');
+import {Deepgram} from '@deepgram/sdk';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
 import {nodewhisper as whisper} from 'nodejs-whisper';
 
-//const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3'); save api key :)
+const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3'); save api key :)
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
 Please use the provided radio text to generate a JSON response containing police event data. The response should be a valid JSON array consisting of objects, where each object represents an event. Each event should have the following properties:
