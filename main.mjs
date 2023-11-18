@@ -28,14 +28,14 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
-import Deepgram from '@deepgram/sdk';
-console.log(JSON.stringify(Deepgram));
+import api from 'api';
+const Deepgram = api('@api-beta-deepgram/v1.0#1nvhf2qloimih4v');
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
 import {nodewhisper as whisper} from 'nodejs-whisper';
 
-const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3');
+//const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3'); save api key :)
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
 Please use the provided radio text to generate a JSON response containing police event data. The response should be a valid JSON array consisting of objects, where each object represents an event. Each event should have the following properties:
@@ -90,7 +90,7 @@ class PoliceScanner {
   async transcribe() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav'))}).then(data => {
+      Deepgram.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav'))}).then(data => {
         console.log('data => '+JSON.stringify(data));
         this.transcript.push(data.data);
         fs.unlinkSync(resolve(__dirname, filename));
