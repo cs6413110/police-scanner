@@ -122,7 +122,7 @@ const requestTranscribing = (filepath, callback) => {
 }
 const handleTranscribing = async() => {
   busy = true;
-  const transcipt = await whisper(queue[0][0], {modelName: 'tiny.en'});
+  const transcript = await whisper(queue[0][0], {modelName: 'tiny.en'});
   busy = false;
   queue[0][1](transcript);
   queue.splice(0, 1);
