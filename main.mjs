@@ -104,9 +104,9 @@ class PoliceScanner {
       });
       console.log('Premature: '+JSON.stringify(this.premature));
       console.log('Transcript: '+JSON.stringify(this.transcript));
-      if (this.transcript.length >= 6) {
+      if (this.transcript.length >= 30) {
         events = events.concat(this.premature);
-        this.transcript = this.transcript.slice(-3);
+        this.transcript = this.transcript.slice(-15);
       }
     });
   }
