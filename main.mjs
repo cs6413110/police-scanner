@@ -28,7 +28,7 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
-import {Deepgram} from '@deepgram/sdk/dist';
+import {Deepgram} from '@deepgram/sdk/dist/index.js';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
