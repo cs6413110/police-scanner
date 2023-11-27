@@ -8,8 +8,6 @@
 
   Download mp3 files from radio sources
   Send files to deepgram(ai company that converts text to speech)
-  
-
 
   Setup:
   clone this repo
@@ -46,8 +44,7 @@ Please use the provided radio text to generate a JSON response containing police
 Here is an example output to follow:
 [{"address":"4928 E Warding Cir","type":"Intimidation"}]
 
-If there is no clear event or if both address and type are unknown, simply return an empty array. Please keep in mind that the translator for police radio to text may introduce errors and misinterpretations, so use the most likely options if a word doesn't fit the context. 
-
+If there is no clear event or if both address and type are unknown, simply return an empty array. It is critical that information is correct, so if there isn't enough information or content, DO NOT GIVE AN EVENT.
 Please process the following data and generate the appropriate JSON response:
 `;
 let policeRadioSources = {}, scanners = [], events = [];
@@ -68,19 +65,17 @@ class PoliceScanner {
   }
 
   makeFileStream() {
-    this.fileSource = `${this.name}@${Math.random()}.mp3`; // Random file name for ref
+    this.fileSource = `${this.name}.mp3`; // Random file name for ref
     this.file = fs.createWriteStream(resolve(__dirname, this.fileSource)); // Create write stream
     this.file.on('error', e => console.error(e));
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 60000); // File size will be ~10 minute longs
     this.file.on('finish', () => {
-      ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
-        this.filesToProcess.push(this.fileSource);
-        this.makeFileStream();
-        this.transcribe();
-        this.chatgpt();
-      }).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
-    }); // After stream is 100% done, link a new stream
+      this.filesToProcess.push(this.fileSource);
+      this.transcribe();
+      this.chatgpt();
+      this.makeFileStream();
+    });
   }
 
   async transcribe() {
@@ -88,9 +83,8 @@ class PoliceScanner {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
       deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav')), mimetype: 'audio/mp3'}).then(data => {
         console.log('data => '+JSON.stringify(data));
-        this.transcript.push(data.data);
+        this.transcript.push(data.results.alternatives.transcript);
         fs.unlinkSync(resolve(__dirname, filename));
-        fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
       });
     }
   }  
