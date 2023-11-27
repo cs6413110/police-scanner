@@ -71,19 +71,22 @@ class PoliceScanner {
     this.res.body.pipe(this.file); // Link to mp3 stream
     setTimeout(() => this.file.end(), 60000); // File size will be ~10 minute longs
     this.file.on('finish', () => {
-      this.filesToProcess.push(this.fileSource);
-      this.transcribe();
-      this.chatgpt();
-      this.makeFileStream();
+      ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
+        this.filesToProcess.push(this.fileSource);
+        this.makeFileStream();
+        this.transcribe();
+        this.chatgpt();
+      }).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
     });
   }
 
   async transcribe() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename)), mimetype: 'audio/mp3'}).then(data => {
+      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav')), mimetype: 'audio/mp3'}).then(data => {
         this.transcript.push(data.results.alternatives.transcript);
         fs.unlinkSync(resolve(__dirname, filename));
+        fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
       });
     }
   }  
