@@ -51,11 +51,8 @@ If there is no clear event or if both address and type are unknown, simply retur
 Please process the following data and generate the appropriate JSON response:
 `;
 let policeRadioSources = {}, scanners = [], events = [];
-policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/qvm5g8yst6cbj92.mp3?nc=72701&xan=xtf9912b41c';
-policeRadioSources['Mesa_Police_Department_Fiesta_Patrol_District'] = 'https://listen.broadcastify.com/x2k9g1dfq7ct85n.mp3?nc=12277&xan=xtf9912b41c';
-policeRadioSources['Mesa_Police_Department_Red_Mountain_Patrol_District'] = 'https://listen.broadcastify.com/429ms5hp86ywbdz.mp3?nc=68310&xan=xtf9912b41c';
-policeRadioSources['Mesa_Police_Department_Superstition_Patrol_District'] = 'https://listen.broadcastify.com/fc9m862sj345byx.mp3?nc=67966&xan=xtf9912b41c';
-
+policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/0hnrgbzfswq591k.mp3?nc=68744&xan=xtf9912b41c';
+  
 class PoliceScanner {
   constructor(url, name) {
     this.filesToProcess = [];
