@@ -81,7 +81,7 @@ class PoliceScanner {
   async transcribe() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav')), mimetype: 'audio/mp3'}).then(data => {
+      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename)), mimetype: 'audio/mp3'}).then(data => {
         this.transcript.push(data.results.alternatives.transcript);
         fs.unlinkSync(resolve(__dirname, filename));
       });
