@@ -28,12 +28,12 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import {fileURLToPath} from 'url';
-import cring from '@deepgram/sdk/dist/index.js';
+import dg from '@deepgram/sdk/dist/index.js';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
 import {nodewhisper as whisper} from 'nodejs-whisper';
-const {Deepgram} = cring;
+const {Deepgram} = dg;
 const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3');
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 const prompt = `
@@ -86,7 +86,7 @@ class PoliceScanner {
   async transcribe() {
     for (const filename of this.filesToProcess) {
       this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav'))}).then(data => {
+      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav')), mimetype: 'audio/mp3'}).then(data => {
         console.log('data => '+JSON.stringify(data));
         this.transcript.push(data.data);
         fs.unlinkSync(resolve(__dirname, filename));
