@@ -80,8 +80,8 @@ class PoliceScanner {
   async transcribe() {
     deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, this.fileSource).replace('mp3', 'wav')), mimetype: 'audio/wav'}).then(data => {
       this.transcript.push(data.results.channels[0].alternatives[0]);
-      fs.unlinkSync(resolve(__dirname, filename));
-      fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
+      fs.unlinkSync(resolve(__dirname, this.fileSource));
+      fs.unlinkSync(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
       this.makeFileStream();
     });
   }  
