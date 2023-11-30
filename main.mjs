@@ -34,7 +34,7 @@ import {nodewhisper as whisper} from 'nodejs-whisper';
 const {Deepgram} = dg;
 const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3');
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
-const prompt = `Your job is to interpret data from an AI audio transcription. The transcription is of police radio. Your job is to determine what criminal events are happening by obtaining both the address location of an event and the criminal offense type of the event. You will respond in json format like so: [{"type":"type of event","address":"address where event is occuring"},{"type":"Intimidation","address":"4423 E. Example Rd."}]. Here is the raw transcript data: `;
+const prompt = `Your job is to interpret data from an AI audio transcription. The transcription is of police radio. Your job is to determine what criminal events are happening by obtaining both the address location of an event and the criminal offense type of the event. You will respond in json format like so: [{"type":"type of event","address":"address where event is occuring"},{"type":"Intimidation","address":"4423 E. Example Rd."}]. The events must be exact. If there is not enough information to be certain that it is occuring just send an empty array. There also may be multiple events. Here is the raw transcript data: `;
 let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/935hgs14f6r7cj0.mp3?nc=63732&xan=xtf9912b41c';
   
@@ -84,8 +84,9 @@ class PoliceScanner {
       }
       if (!Array.isArray(this.premature)) return this.chatgpt(); // recompute
       this.premature = this.premature.filter(e => {
+        const badValues = ['unknown', '']; // add more bad values here to filter chatgpt results
         if (Object.keys(e).length !== 2 || e.type === undefined || e.address === undefined) return this.chatgpt();
-        if (e.type.toLowerCase() === 'unknown' && e.address.toLowerCase() === 'unknown') return false;
+        if (badValues.includes(e.type.toLowerCase()) && badValues.includes(e.address.toLowerCase())) return false;
         return true;
       });
       let rawWords = '';
