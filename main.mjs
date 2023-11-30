@@ -52,7 +52,6 @@ policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://
   
 class PoliceScanner {
   constructor(url, name) {
-    this.filesToProcess = [];
     this.transcript = [];
     this.url = url;
     this.name = name;
@@ -72,24 +71,19 @@ class PoliceScanner {
     setTimeout(() => this.file.end(), 60000); // File size will be ~10 minute longs
     this.file.on('finish', () => {
       ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
-        this.filesToProcess.push(this.fileSource);
         this.transcribe();
         this.chatgpt();
-        this.makeFileStream();
       }).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
     });
   }
 
   async transcribe() {
-    for (const filename of this.filesToProcess) {
-      this.filesToProcess.splice(this.filesToProcess.indexOf(filename), 1);
-      deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, filename).replace('mp3', 'wav')), mimetype: 'audio/mp3'}).then(data => {
-        console.log(JSON.stringify(data));
-        this.transcript.push(data.results.channels[0].alternatives[0]);
-        fs.unlinkSync(resolve(__dirname, filename));
-        fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
-      });
-    }
+    deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, this.fileSource).replace('mp3', 'wav')), mimetype: 'audio/wav'}).then(data => {
+      this.transcript.push(data.results.channels[0].alternatives[0]);
+      fs.unlinkSync(resolve(__dirname, filename));
+      fs.unlinkSync(resolve(__dirname, filename).replace('mp3', 'wav'));
+      this.makeFileStream();
+    });
   }  
 
   async chatgpt() {
