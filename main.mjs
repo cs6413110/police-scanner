@@ -77,11 +77,7 @@ class PoliceScanner {
   async chatgpt() {
     if (this.transcript.length === 0) return;
     gpt({prompt: prompt+this.transcript.join('\n'), model: 'gpt-4', type: 'json'}, (err, data) => {
-      try {
-        this.premature = JSON.parse(data.gpt);
-      } catch(e) {
-        return this.chatgpt();
-      }
+      this.premature = JSON.parse(data.gpt);
       if (!Array.isArray(this.premature)) return this.chatgpt(); // recompute
       this.premature = this.premature.filter(e => {
         const badValues = ['unknown', '']; // add more bad values here to filter chatgpt results
