@@ -77,14 +77,23 @@ class PoliceScanner {
   async chatgpt() {
     if (this.transcript.length === 0) return;
     gpt({prompt: prompt+this.transcript.join('\n'), model: 'gpt-4', type: 'json'}, (err, data) => {
-      this.premature = JSON.parse(data.gpt);
+      try {
+        this.premature = JSON.parse(data.gpt);
+      } catch(e) {
+        return this.chatgpt();
+      }
       if (!Array.isArray(this.premature)) return this.chatgpt(); // recompute
       this.premature = this.premature.filter(e => {
         if (Object.keys(e).length !== 2 || e.type === undefined || e.address === undefined) return this.chatgpt();
         if (e.type.toLowerCase() === 'unknown' && e.address.toLowerCase() === 'unknown') return false;
         return true;
       });
-      console.log('Transcript: '+this.transcript.join('\n'));
+      let rawWords = '';
+      for (const transcript of this.transcript) {
+        rawWords += `
+        ${JSON.parse(transcript).transcript}`;
+      }
+      console.log('Transcript: '+rawWords);
       console.log('Premature: '+JSON.stringify(this.premature));
       if (this.transcript.length >= 30) {
         events = events.concat(this.premature);
@@ -94,5 +103,5 @@ class PoliceScanner {
   }
 }
 
-setInterval(() => console.log('Probable: '+JSON.stringify(events)), 30000); // event log every 30 seconds 
+setInterval(() => console.log('Probable: '+JSON.stringify(events)), 60000); // event log every 30 seconds 
 for (const source of Object.keys(policeRadioSources)) scanners.push(new PoliceScanner(policeRadioSources[source], source)); // Launch the radio listeners
