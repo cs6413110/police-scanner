@@ -41,14 +41,14 @@ Please use the provided radio text to generate a JSON response containing police
 
 2. "type": This property represents the type of the event and should be labeled as one of the recognized criminal offenses by the FBI. If the type is unclear, please use the value "UNKNOWN".
 
-Here is an example output to follow:
+Here is an example output:
 [{"address":"4928 E Warding Cir","type":"Intimidation"}]
 
 If there is no clear event or if both address and type are unknown, simply return an empty array. It is critical that information is correct, so if there isn't enough information or content, DO NOT GIVE AN EVENT.
 Please process the following data and generate the appropriate JSON response:
 `;
 let policeRadioSources = {}, scanners = [], events = [];
-policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/0hnrgbzfswq591k.mp3?nc=68744&xan=xtf9912b41c';
+policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/935hgs14f6r7cj0.mp3?nc=63732&xan=xtf9912b41c';
   
 class PoliceScanner {
   constructor(url, name) {
