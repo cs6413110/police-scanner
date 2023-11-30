@@ -73,9 +73,9 @@ class PoliceScanner {
     this.file.on('finish', () => {
       ffmpeg(resolve(__dirname, this.fileSource)).toFormat('wav').outputOptions('-ar 16000').on('end', () => {
         this.filesToProcess.push(this.fileSource);
-        this.makeFileStream();
         this.transcribe();
         this.chatgpt();
+        this.makeFileStream();
       }).save(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
     });
   }
