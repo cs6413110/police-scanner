@@ -34,19 +34,7 @@ import {nodewhisper as whisper} from 'nodejs-whisper';
 const {Deepgram} = dg;
 const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3');
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
-const prompt = `
-Please use the provided radio text to generate a JSON response containing police event data. The response should be a valid JSON array consisting of objects, where each object represents an event. Each event should have the following properties:
-
-1. "address": This property should contain the address of the event in USPS standard address format. If the address is unknown, please use the value "UNKNOWN".
-
-2. "type": This property represents the type of the event and should be labeled as one of the recognized criminal offenses by the FBI. If the type is unclear, please use the value "UNKNOWN".
-
-Here is an example output:
-[{"address":"4928 E Warding Cir","type":"Intimidation"}]
-
-If there is no clear event or if both address and type are unknown, simply return an empty array. It is critical that information is correct, so if there isn't enough information or content, DO NOT GIVE AN EVENT.
-Please process the following data and generate the appropriate JSON response:
-`;
+const prompt = `Your job is to interpret data from an AI audio transcription. The transcription is of police radio. Your job is to determine what criminal events are happening by obtaining both the address location of an event and the criminal offense type of the event. You will respond in json format like so: [{"type":"type of event","address":"address where event is occuring"},{"type":"Intimidation","address":"4423 E. Example Rd."}]. Here is the raw transcript data: `;
 let policeRadioSources = {}, scanners = [], events = [];
 policeRadioSources['Mesa_Police_Department_Central_Patrol_District'] = 'https://listen.broadcastify.com/935hgs14f6r7cj0.mp3?nc=63732&xan=xtf9912b41c';
   
@@ -79,7 +67,7 @@ class PoliceScanner {
 
   async transcribe() {
     deepgram.transcription.preRecorded({stream: fs.createReadStream(resolve(__dirname, this.fileSource).replace('mp3', 'wav')), mimetype: 'audio/wav'}).then(data => {
-      this.transcript.push(data.results.channels[0].alternatives[0]);
+      this.transcript.push(JSON.stringify(data.results.channels[0].alternatives[0]));
       fs.unlinkSync(resolve(__dirname, this.fileSource));
       fs.unlinkSync(resolve(__dirname, this.fileSource).replace('mp3', 'wav'));
       this.makeFileStream();
