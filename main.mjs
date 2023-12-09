@@ -77,7 +77,7 @@ class PoliceScanner {
   }
 
   chatgpt() {
-    if (!this.transcript.length) return;
+    if (this.transcript.length === 0) return;
     gpt({prompt: prompt+this.transcript.join('\n'), model: 'gpt-4', type: 'json'}, (err, data) => {
       const res = JSON.parse(data.gpt);
       if (!this.checkIfValid(res)) return this.chatgpt();
