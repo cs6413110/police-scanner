@@ -1,26 +1,15 @@
 /*
-  Resouces:
-  
   Radio Sources are from https://www.broadcastify.com/listen/official
-  Chatgpt usage is free with gpti
-
-  Process:
-
-  Download mp3 files from radio sources
-  Send files to deepgram(ai company that converts text to speech)
+  Chatgpt usage via npm package gpti
 
   Setup:
-  clone this repo
-  Command: npm install node-fetch gpti nodejs-whisper
-  Command: npx nodejs-whisper download 
-  Install tiny.en model
-  Run this file
+  - run `npm install fs node-fetch url path @deepgram/sdk fluent-ffmpeg gpti`
 
-  Possible Optimizations:
-    - Find a way to not create/delete audio files?
-    - Use whisper as a service instead of locally
-  Possible Upgrades:
-    - Connect to mongodb server and scale
+  Startup:
+  - run `node main.mjs`
+
+  Warnings:
+  The radio sources
 */
 
 import fs from 'fs';
@@ -30,7 +19,6 @@ import dg from '@deepgram/sdk/dist/index.js';
 import {dirname, resolve} from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import {gpt} from 'gpti';
-import {nodewhisper as whisper} from 'nodejs-whisper';
 const {Deepgram} = dg;
 const deepgram = new Deepgram('8f4de099ff5cefb96a48084143d9b48afd87e0b3');
 const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
@@ -74,24 +62,39 @@ class PoliceScanner {
     });
   }  
 
-  async chatgpt() {
-    if (this.transcript.length === 0) return;
+  checkIfValid(p) {
+    if (!Array.isArray(p)) return false;
+    for (const e of this.premature) if (Object.keys(e).length !== 3 || !e.type || !e.address || !e.confidence) return false;
+  }
+
+  filterUnclear(p) {
+    const badValues = ['unknown', '', '0'];
+    return p.filter(e => {
+      for (const value of Object.values(e)) if (badValues.includes(String(value).toLowerCase())) return false;
+      return true;
+    })
+  }
+
+  chatgpt() {
+    if (!this.transcript.length) return;
     gpt({prompt: prompt+this.transcript.join('\n'), model: 'gpt-4', type: 'json'}, (err, data) => {
-      this.premature = JSON.parse(data.gpt);
-      if (!Array.isArray(this.premature)) return this.chatgpt(); // recompute
-      this.premature = this.premature.filter(e => {
-        const badValues = ['unknown', '']; // add more bad values here to filter chatgpt results
-        if (Object.keys(e).length !== 3 || !e.type || !e.address || !e.confidence) return this.chatgpt();
-        if (badValues.includes(e.type.toLowerCase()) && badValues.includes(e.address.toLowerCase())) return false;
-        return true;
-      });
-      let rawWords = '';
-      for (const transcript of this.transcript) {
-        rawWords += `
-        ${JSON.parse(transcript).transcript}`;
-      }
-      console.log('Transcript: '+rawWords);
-      console.log('Premature: '+JSON.stringify(this.premature));
+      const res = JSON.parse(data.gpt);
+      if (!this.checkIfValid(res)) return this.chatgpt();
+      const premature = this.filterUnclear(res);
+      console.log('Transcript:');
+      for (const transcript of this.transcript) console.log(`\n${JSON.parse(transcript).transcript}`);
+      console.log('Premature: '+JSON.stringify(premature));
+      this.checkGpt(premature, this.transcript);
+    });
+  }
+
+  checkGpt(premature, transcript) {
+    gpt({prompt: prompt2+JSON.stringify(premature), model: 'gpt-4', type: 'json', (err, data) => {
+      const res = JSON.parse(data.gpt);
+      if (!this.checkIfValid(res)) return this.checkGpt(premature, transcript);
+      this.premature = this.filterUnclear(res);
+      console.log('Old: '+premature);
+      console.log('Refactored: '+this.premature);
       if (this.transcript.length >= 30) {
         events = events.concat(this.premature);
         this.transcript = this.transcript.slice(-15);
