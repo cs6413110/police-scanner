@@ -90,14 +90,14 @@ class PoliceScanner {
   }
 
   checkGpt(premature, transcript) {
-    gpt({prompt: prompt2+transcript.join('\n')+' Trainee Response: '+JSON.stringify(premature), model: 'gpt-4', type: 'json', (err, data) => {
+    gpt({prompt: prompt2+transcript.join('\n')+' Trainee Response: '+JSON.stringify(premature), model: 'gpt-4', type: 'json'}, (err, data) => {
       const res = JSON.parse(data.gpt);
       if (!this.checkIfValid(res)) return this.checkGpt(premature, transcript);
       this.premature = this.filterUnclear(res);
       console.log('Old: '+premature);
       console.log('Refactored: '+this.premature);
       if (this.transcript.length >= 30) {
-        events = events.concat(this.premature);
+        events.push(...this.premature);
         this.transcript = this.transcript.slice(-15);
       }
     });
