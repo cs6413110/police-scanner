@@ -81,7 +81,7 @@ class PoliceScanner {
       if (!Array.isArray(this.premature)) return this.chatgpt(); // recompute
       this.premature = this.premature.filter(e => {
         const badValues = ['unknown', '']; // add more bad values here to filter chatgpt results
-        if (Object.keys(e).length !== 2 || e.type === undefined || e.address === undefined) return this.chatgpt();
+        if (Object.keys(e).length !== 3 || !e.type || !e.address || !e.confidence) return this.chatgpt();
         if (badValues.includes(e.type.toLowerCase()) && badValues.includes(e.address.toLowerCase())) return false;
         return true;
       });
